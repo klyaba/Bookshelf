@@ -1,6 +1,6 @@
 .modalWin {
-    height: 200px;
-    width: 300px;
+    height: 50%;
+    width: 50%;
     border: 3px outset gray;
     background: wheat;
     top: 20%; /* отступ сверху */
