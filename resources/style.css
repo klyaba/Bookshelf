@@ -23,3 +23,10 @@
     left: 0;
     top: 0;
 }
+
+#new-year {
+    -moz-appearance: textfield;
+}
+#new-year::-webkit-inner-spin-button {
+    display: none;
+}

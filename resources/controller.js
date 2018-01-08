@@ -23,111 +23,191 @@ var books = [{
             year: '1985'
         }
     }];
+var firstAddFlag = false, yearFlag = true;
 
 function init() {
-    // Таблица по умолчанию
-    var table = document.getElementById('bookTable');
-    var rows = [];
+
     for (var i = 0; i < books.length; i++) {
-        rows[i] = table.insertRow(i);
-        for (var j = 0; j < 3; j++) {
-            if (j == 0) {
-                rows[i].insertCell(j).innerHTML = '<img width = "130" src = "' + books[i].image + '">';
-            }
-            if (j == 1) {
-                rows[i].insertCell(j).innerHTML = '<p>' + books[i].info.title +
-                    '<br>' + books[i].info.author +
-                    '<br>' + books[i].info.year + '</p>';
-            }
-            if (j == 2) {
-                rows[i].insertCell(j).innerHTML = "<button class='edit-btn'>Редактировать</button><button class='del-btn'>Удалить</button>";
-            }
-        }
+        addBook(books[i], i);
     }
 
+    firstAddFlag = true;
+
+    var table = document.getElementById("bookTable");
     //обработка нажатия кнопок в таблице
     table.onclick = function (event) {
         event = event || window.event;
         var target = event.target || event.srcElement;
+        var row = target.parentNode.parentNode;
 
         //кнопка удаления книги
         if (target.className == 'del-btn') {
-            var row = target.parentNode.parentNode;
-            this.deleteRow(row.rowIndex);
+            deleteBook(row.rowIndex);
         }
 
         //кнопка редактирования книги
         if (target.className == 'edit-btn') {
-
+            showEditForm(row.rowIndex);
         }
     }
 }
 
-function addBook() {
-    //Добавление книги в массив
-    books[books.length] = {
-        "image": document.getElementById('add-image').value,
+function addBook(book, index) {
+
+    if (firstAddFlag) {
+        // books.splice(index, 0, book);
+        books.push(book);
+    }
+
+    var row = document.getElementById('bookTable').insertRow(index);
+    row.insertCell(0).innerHTML = '<img width = "130" src = "' + books[index].image + '">';
+    row.insertCell(1).innerHTML = '<p class = "title">' + books[index].info.title + '</p>' +
+        '<p class = "author">' + books[index].info.author + '</p>' +
+        '<p class = "year">' + books[index].info.year + '</p>';
+    row.insertCell(2).innerHTML = "<button class='edit-btn'>Редактировать</button><button class='del-btn'>Удалить</button>";
+
+}
+
+function editBook(book, index) {
+
+    books.splice(index, 1, book);
+
+    var row = document.getElementById("bookTable").childNodes[index];
+    row.cells[0].firstChild.src = book.image;
+    row.cells[1].getElementsByClassName("title")[0].innerHTML = book.info.title;
+    row.cells[1].getElementsByClassName("author")[0].innerHTML = book.info.author;
+    row.cells[1].getElementsByClassName("year")[0].innerHTML = book.info.year;
+
+    return false;
+}
+
+function deleteBook(index) {
+    document.getElementById('bookTable').deleteRow(index);
+    books.splice(index, 1);
+}
+
+function showEditForm(rowNumber) {
+    showForm(rowNumber);
+
+    document.getElementById("new-title").value = books[rowNumber].info.title;
+    document.getElementById("new-author").value = books[rowNumber].info.author;
+    document.getElementById("new-year").value = books[rowNumber].info.year;
+    document.getElementById("new-image").value = books[rowNumber].image;
+
+    var book;
+    var saveButton = document.getElementById("save-btn");
+
+    // if (yearFlag) {
+    //     saveButton.setAttribute("class", "temporary");
+    //     book = getChangeBook();
+    //     saveButton.addEventListener("click", function () {
+    //         editBook(book, rowNumber)
+    //     });
+    // }
+    // else {
+    //     saveButton.addEventListener("click", function () {
+    //         alert ("Введите корректный год!")
+    //     });
+    // }
+
+    saveButton.addEventListener("click", function () {
+        if (yearFlag) {
+            book = getChangeBook();
+            editBook(book, rowNumber);
+            closeForm();
+        }
+        else {
+            alert ("Введите корректный год!");
+        }
+    })
+}
+
+
+// function isEmpty(str) {
+//     if (str.trim() == '')
+//         return true;
+//
+//     return false;
+// }
+
+function showAddForm() {
+    showForm(-1);
+
+    var book;
+    var saveButton = document.getElementById("save-btn");
+    saveButton.addEventListener("click", function () {
+        firstAddFlag = true;
+        book = getChangeBook();
+        addBook(book, books.length);
+        closeForm();
+    })
+}
+
+function showForm(rowNumber) {
+
+    var editType;
+
+    editType = rowNumber >= 0 ? 'Редактирование' : 'Добавление';
+
+    setDarkLayer();
+
+    form = document.createElement('div'); // создание формы
+    form.id = 'popupWin';
+    form.className = 'modalWin';
+    form.innerHTML = '<h2>' + editType + ' книги</h2>' +
+        '<label id="errors"></label>' +
+        '<p>Наименование</p>' +
+        '<input id = "new-title" class = "new">' +
+        '<p>Автор</p>' +
+        '<input id = "new-author" class = "new">' +
+        '<p>Год выпуска</p>' +
+        '<input type="number" id = "new-year" class = "new" onchange="checkYear(this.value)">' +
+        '<p>Изображение</p>' +
+        '<input id = "new-image" class = "new">' +
+        '<br><input type = "button" value = "Сохранить" id = "save-btn">' +
+        ' <button id = "cancel-btn" class = "temporary">Отменить</button>'
+    ;
+    document.body.appendChild(form); // добавление формы на страницу
+
+    var temporary = document.getElementsByClassName("temporary");
+    [].forEach.call(temporary, function (el) {
+        el.addEventListener("click", closeForm)
+    });
+
+    return false;
+}
+
+function checkYear(year) {
+    if (year < 2018) {
+        yearFlag = true;
+    }     else {
+        yearFlag = false;
+        alert("Год издания не может превышать 2017");
+    }
+}
+
+function getChangeBook() {
+    var book = {
+        "image": document.getElementById("new-image").value,
         "info": {
-            "title": document.getElementById("add-title").value,
-            "author": document.getElementById("add-author").value,
-            "year": document.getElementById("add-year").value
+            title: document.getElementById("new-title").value,
+            author: document.getElementById("new-author").value,
+            year: document.getElementById("new-year").value
         }
     }
-
-    // Добавление строки в таблицу
-    var table = document.getElementById('bookTable');
-    var newRow = table.insertRow(-1);
-    for (var j = 0; j < 3; j++) {
-        if (j == 0) {
-            newRow.insertCell(j).innerHTML = '<img width = "130" src = "' + document.getElementById('add-image').value + '">';
-        }
-        if (j == 1) {
-            newRow.insertCell(j).innerHTML = '<p>' + books[books.length - 1].info.title +
-                '<br>' + books[books.length - 1].info.author +
-                '<br>' + books[books.length - 1].info.year + '</p>';
-        }
-        if (j == 2) {
-            newRow.insertCell(j).innerHTML = "<button>Редактировать</button><button class='del-btn'>Удалить</button>";
-        }
-    }
+    return book;
 }
 
-function showAddBookForm() {
-
-    var darkLayer = document.createElement('div'); // слой затемнения
+function setDarkLayer() {
+    darkLayer = document.createElement('div'); // слой затемнения
     darkLayer.id = 'shadow'; // id чтобы подхватить стиль
     darkLayer.className = "temporary";
     document.body.appendChild(darkLayer); // затемнение фона
-
-    var addForm = document.createElement('div'); // создание окна добавления книги
-    addForm.id = 'popupWin';
-    addForm.className = 'modalWin';
-    addForm.innerHTML = '<h2> Добавление книги </h2>' +
-        '<p>Наименование</p>' +
-        '<input id = "add-title">' +
-        '<p>Автор</p>' +
-        '<input id = "add-author">' +
-        '<p>Год выпуска</p>' +
-        '<input id = "add-year">' +
-        '<p>Изображение</p>' +
-        '<input id = "add-image">' +
-        '<br><input type="button" value = "Добавить" id = "add-btn" class = "temporary">' +
-        ' <button id = "cancel-btn" class = "temporary">Отмена</button>'
-    ;
-    document.body.appendChild(addForm); // добавление формы
-
-    // Обработка клика на фоне или кнопках формы
-    var temporary = document.getElementsByClassName("temporary");
-    [].forEach.call(temporary, function (el) {
-        el.onclick = function () {
-            if (el.id == "add-btn") {
-                addBook();
-            }
-            darkLayer.parentNode.removeChild(darkLayer); // удаляем затемнение
-            addForm.parentNode.removeChild(addForm); // удаление окна
-            return false;
-        }
-    });
-
+    return false;
 }
 
+function closeForm() {
+    darkLayer.parentNode.removeChild(darkLayer); // удаляем затемнение
+    form.parentNode.removeChild(form); // удаление окна
+    return false;
+}
