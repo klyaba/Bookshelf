@@ -26,7 +26,7 @@ var books = [{
 var DEFAULT_IMAGE = "http://artod.net/wp-content/uploads/2016/11/no-image.png";
 var firstAddFlag = false; // флаг для отделения инициализация от добавления новых книг
 var yearFlag = true; // флаг для проверки корректности введенного значения года издания
-var noneEmptyFlag = false;
+var noneEmptyFlag = false; // флаг для проверки заполнености формы
 
 // заполнение таблицы значениями по умолчанию и обработка нажатия табличных кнопок
 function init() {
@@ -61,10 +61,10 @@ function init() {
     }
 }
 
-// функция лобавления новой книги
+// функция добавления новой книги
 function addBook(book, index) {
 
-    // добавление в мамссив
+    // добавление в массив
     if (firstAddFlag) {
         // books.splice(index, 0, book);
         books.push(book);
@@ -87,6 +87,7 @@ function editBook(book, index) {
     books.splice(index, 1, book);
 
     // вставка новых значений в таблицу
+    // текущие данные заменяются данными из формы
     var row = document.getElementById("bookTable").childNodes[index];
     row.cells[0].firstChild.src = book.image;
     row.cells[1].getElementsByClassName("title")[0].innerHTML = '<span class="table_text_title">' + book.info.title + '</span>';
@@ -102,10 +103,11 @@ function deleteBook(index) {
     books.splice(index, 1);
 }
 
-// вывод формы редактирования
+// работа с формой редактирования книги
 function showEditForm(rowNumber) {
     showForm(rowNumber);
 
+    // данные книги из массива вносятся в форму
     document.getElementById("new-title").value = books[rowNumber].info.title;
     document.getElementById("new-author").value = books[rowNumber].info.author;
     document.getElementById("new-year").value = books[rowNumber].info.year;
@@ -114,10 +116,11 @@ function showEditForm(rowNumber) {
     var book;
     var saveButton = document.getElementById("save-btn");
 
+    // обработка при клике на кнопку Сохранить
     saveButton.addEventListener("click", function () {
         noneEmptyFlag = isEmpty();
-        if (yearFlag) {
-            if (noneEmptyFlag) {
+        if (yearFlag) { // проверка на корректность года
+            if (noneEmptyFlag) { // проверка на заполнение
                 book = getChangeBook();
                 editBook(book, rowNumber);
                 closeForm();
@@ -132,7 +135,7 @@ function showEditForm(rowNumber) {
     })
 }
 
-// вывод формы добавления
+// работа с формой добавления книги
 function showAddForm() {
     showForm(-1);
 
@@ -140,8 +143,8 @@ function showAddForm() {
     var saveButton = document.getElementById("save-btn");
     saveButton.addEventListener("click", function () {
         noneEmptyFlag = isEmpty();
-        if (yearFlag) {
-            if (noneEmptyFlag) {
+        if (yearFlag) { // проверка на корректность года
+            if (noneEmptyFlag) { // проверка на заполнение
                 firstAddFlag = true;
                 book = getChangeBook();
                 addBook(book, books.length);
@@ -157,18 +160,14 @@ function showAddForm() {
     })
 }
 
+// функция вывода формы
 function showForm(rowNumber) {
     document.getElementById("bookTable").style.display = "none";
     document.getElementById("add-btn").style.display = "none";
 
-    var editType;
-
-    editType = rowNumber >= 0 ? 'Редактирование' : 'Добавление';
-
-    // setDarkLayer();
+    var editType = rowNumber >= 0 ? 'Редактирование' : 'Добавление';
 
     form = document.createElement('div'); // создание формы
-    // form = document.getElementById("form");
     form.id = 'popupWin';
     form.className = 'form';
     form.innerHTML = '<h2 class="form_name">' + editType + ' книги</h2>' +
@@ -188,7 +187,7 @@ function showForm(rowNumber) {
     return false;
 }
 
-
+// Функция проверки на заполнение формы
 function isEmpty() {
     if (!(document.getElementById("new-title").value)
         || !(document.getElementById("new-author").value)
@@ -199,6 +198,7 @@ function isEmpty() {
     }
 }
 
+// функция проверки корректности года
 function checkYear(year) {
     if (year < 2018) {
         yearFlag = true;
@@ -224,10 +224,10 @@ function getChangeBook() {
     return book;
 }
 
+// функция закрытия формы
 function closeForm() {
     document.getElementById("bookTable").style.display = "block";
     document.getElementById("add-btn").style.display = "block";
-    // darkLayer.parentNode.removeChild(darkLayer); // удаляем затемнение
     form.parentNode.removeChild(form); // удаление окна
     return false;
 }
