@@ -23,6 +23,7 @@ var books = [{
             year: '1985'
         }
     }];
+var DEFAULT_IMAGE = "http://artod.net/wp-content/uploads/2016/11/no-image.png";
 var firstAddFlag = false; // флаг для отделения инициализация от добавления новых книг
 var yearFlag = true; // флаг для проверки корректности введенного значения года издания
 var noneEmptyFlag = false;
@@ -114,10 +115,16 @@ function showEditForm(rowNumber) {
     var saveButton = document.getElementById("save-btn");
 
     saveButton.addEventListener("click", function () {
+        noneEmptyFlag = isEmpty();
         if (yearFlag) {
-            book = getChangeBook();
-            editBook(book, rowNumber);
-            closeForm();
+            if (noneEmptyFlag) {
+                book = getChangeBook();
+                editBook(book, rowNumber);
+                closeForm();
+            }
+            else {
+                alert("Заполните все обязательные строки");
+            }
         }
         else {
             alert("Введите корректный год!");
@@ -132,16 +139,17 @@ function showAddForm() {
     var book;
     var saveButton = document.getElementById("save-btn");
     saveButton.addEventListener("click", function () {
+        noneEmptyFlag = isEmpty();
         if (yearFlag) {
-            // if (noneEmptyFlag) {
+            if (noneEmptyFlag) {
                 firstAddFlag = true;
                 book = getChangeBook();
                 addBook(book, books.length);
                 closeForm();
-            // }
-            // else {
-            //     alert("Заполните все строки");
-            // }
+            }
+            else {
+                alert("Заполните все строки");
+            }
         }
         else {
             alert("Введите корректный год!");
@@ -164,11 +172,11 @@ function showForm(rowNumber) {
     form.id = 'popupWin';
     form.className = 'form';
     form.innerHTML = '<h2 class="form_name">' + editType + ' книги</h2>' +
-        '<p class="form_text">Наименование</p>' +
+        '<p class="form_text">Наименование*</p>' +
         '<input id = "new-title" class = "form_field">' +
-        '<p class="form_text">Автор</p>' +
+        '<p class="form_text">Автор*</p>' +
         '<input id = "new-author" class = "form_field">' +
-        '<p class="form_text">Год выпуска</p>' +
+        '<p class="form_text">Год выпуска*</p>' +
         '<input type="number" id = "new-year" class = "form_field form_field_year" onchange="checkYear(this.value)">' +
         '<p class="form_text">Изображение</p>' +
         '<input id = "new-image" class = "form_field" >' +
@@ -177,26 +185,17 @@ function showForm(rowNumber) {
     ;
     document.body.appendChild(form); // добавление формы на страницу
 
-    // var saveButton = document.getElementById("save-btn");
-    // saveButton.addEventListener("click", function () {
-    //     var fields = document.getElementsByClassName("form_field");
-    //     noneEmptyFlag = fields.every(isEmpty);
-    //     alert(noneEmptyFlag);
-    // })
-
     return false;
 }
 
 
-function isEmpty(str) {
-    if (str) {
-        // noneEmptyFlag = false;
-        // alert('Заполните все строки');
-        return true;
-    }
-    else {
-        // noneEmptyFlag = true;
+function isEmpty() {
+    if (!(document.getElementById("new-title").value)
+        || !(document.getElementById("new-author").value)
+        || !(document.getElementById("new-year").value)) {
         return false;
+    } else {
+        return true;
     }
 }
 
@@ -218,6 +217,9 @@ function getChangeBook() {
             author: document.getElementById("new-author").value,
             year: document.getElementById("new-year").value
         }
+    }
+    if (!document.getElementById("new-image").value) {
+        book.image = DEFAULT_IMAGE;
     }
     return book;
 }
