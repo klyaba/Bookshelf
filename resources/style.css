@@ -1,32 +1,114 @@
-.modalWin {
-    height: 50%;
-    width: 50%;
-    border: 3px outset gray;
-    background: wheat;
-    top: 20%; /* отступ сверху */
-    right: 0;
-    left: 0;
-    font-size: 14px;
-    margin: 0 auto;
-    z-index:2; /* поверх всех */
-    position: fixed; /* фиксированное позиционирование, окно стабильно при прокрутке */
-    padding: 15px;
-    border: 1px solid #383838;
-}
-#shadow {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: 1; /* поверх всех, кроме окна*/
-    background: #000;
-    opacity: 0.5; /*прозрачность*/
-    left: 0;
-    top: 0;
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+body {
+    background-color: #DEB887;
 }
 
-#new-year {
+.wrapper {
+    font-family: 'Montserrat', sans-serif;
+    margin-left: 7%;
+    color: #800000;
+}
+
+.button {
+    background-color: #A0522D;
+    color: #FFE4C4;
+    text-align: center;
+    border-radius: 0;
+    border: none;
+    min-height: 35px;
+}
+
+.add_button {
+    padding: 1% 5% 1% 5%;
+    margin-bottom: 2%;
+    font-size: medium;
+}
+
+
+.table {
+    background-color: #FFE4C4;
+    width: 70%;
+    border-collapse: collapse;
+}
+
+td {
+    border-bottom: solid medium #DEB887 ;
+}
+
+td:first-child {
+    width: 10%;
+    text-align: center;
+}
+
+td:last-child {
+    width: 20%;
+    text-align: center;
+}
+
+.table_text {
+    padding-left: 5%;
+    box-sizing: border-box;
+}
+
+.table_text_title {
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.table_image {
+    height: 110px;
+    max-width: 130px;
+    padding: 10%;
+    box-sizing: border-box;
+}
+
+.table_button {
+    border: solid thin #DEB887;
+    width: 70%;
+    text-align: center;
+    margin-top: 3%;
+    font-size: small;
+    word-break: break-all;
+    box-sizing: border-box;
+}
+
+.form {
+    background-color: #FFE4C4;
+    width: 50%;
+    margin-left: 7%;
+    color: #800000;
+}
+
+.form_button {
+    background-color: #A0522D;
+    color: #FFE4C4;
+    padding: 1% 5% 1% 5%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    margin-left: 5%;
+}
+
+.form_name {
+    padding-top: 5%;
+    margin-left: 5%;
+}
+
+.form_text {
+    margin-left: 5%;
+}
+
+.form_field {
+    margin-left: 5%;
+    width: 80%;
+    min-height: 25px;
+}
+
+.form_field_year {
+    width: 6%;
     -moz-appearance: textfield;
 }
-#new-year::-webkit-inner-spin-button {
+
+.form_field_year::-webkit-inner-spin-button {
     display: none;
 }
